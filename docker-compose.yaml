@@ -17,12 +17,14 @@ services:
 
   loki:
     image: grafana/loki:2.7.4
+    container_name: loki
     command: -config.file=/etc/loki/local-config.yaml
     ports:
       - "3100:3100"
 
   prometheus:
     image: prom/prometheus:v2.42.0
+    container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -36,6 +38,7 @@ services:
 
   tempo:
     image: grafana/tempo:2.0.1
+    container_name: tempo
     command: [ "--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false" ]
     ports:
       - "14250:14250"
@@ -45,9 +48,10 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:9.4.3
+    image: grafana/grafana:8.3.4
+    container_name: grafana
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - ./etc/grafana/:/etc/grafana/provisioning/datasources
       - ./etc/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -65,6 +69,7 @@ services:
 
   app-a:
     build: ./app/
+    container_name: app-a
     environment:
       - TARGET_ONE_HOST=app-b
       - TARGET_TWO_HOST=app-c
@@ -78,6 +83,7 @@ services:
 
   app-b:
     build: ./app/
+    container_name: app-b
     environment:
       - TARGET_ONE_HOST=app-b
       - TARGET_TWO_HOST=app-c
@@ -91,6 +97,7 @@ services:
 
   app-c:
     build: ./app/
+    container_name: app-c
     environment:
       - TARGET_ONE_HOST=app-b
       - TARGET_TWO_HOST=app-c
